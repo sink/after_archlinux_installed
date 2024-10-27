@@ -81,7 +81,7 @@ Host github.com
 vi ~/.gitconfig
 ```
 [alias]
-	st = status
+    st = status
     co = checkout
     br = branch
     mg = merge
