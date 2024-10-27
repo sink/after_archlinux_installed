@@ -1,85 +1,118 @@
 # after_archlinux_installed (sk-chimeraos)
 
 ## remove console motd
+```shell
 cjust toggle-user-motd
+```
 
 ## first unlock immutable system
+```shell
 sudo frzr-unlock
+```
 
 ## change pacman mirror and update database
+```shell
 cat "Server=https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
 sudo pacman -Sy
+```
 
 ## install development base (make autoconf ...)
+```shell
 sudo pacman -S base-devel
 sudo pacman -S cmake
+```
 
 ## install dash to panel and vitals
+```shell
 sudo pacman -S gnome-shell-extension-dash-to-panel
 sudo pacman -S gnome-shell-extension-vitals
+```
 
 ## install cockpit (localhost:9090, system management)
+```shell
 sudo pacman -S cockpit
 systemctl enable cockpit.service
 systemctl start cockpit.service
+```
 
 ## install ibus-rime and frost pinyin
+```shell
 sudo pacman -S ibus-rime
 git clone https://ghproxy.cc/https://github.com/gaboolic/rime-frost Rime\n\n
 cd Rime
 cp -r * ~/.config/ibus/rime
+```
 
 ## change zsh theme to robbyrussell and enable archlinux plugin
+```shell
 vi .zshrc
 ZSH_THEME="robbyrussell"
 plugins=(git sudo z fast-syntax-highlighting archlinux)
+```
 
 ## set flatpak mirror
+```shell
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
 then install microsoft-edge
+```
 
 ## set efi boot order
+```shell
 sudo efibootmgr -o 000x,000y,000z
+```
 
 ## install steamcommunity_302 for steam deck
+```shell
 cd SteamDeck_302
 ./install.sh
+```
 
 ## install netease-cloud-music
+```shell
 git clone https://aur.archlinux.org/netease-cloud-music.git
 cd netease-cloud-music
 makepkg -si
+```
 
 ## install rust
+```shell
 yay rustup
 echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup' >> ~/.zshrc
 echo 'export RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup' >> ~/.zshrc
 rustup default stable
+```
 
 ## install nodejs
+```shell
 yay nodejs
 yay npm
 npm config set registry https://registry.npmmirror.com
+```
 
 ## install vscode
+```shell
 yay -S visual-studio-code-bin
+```
 
 ## install proton-ge
+```shell
 cd .steam/steam/compatibilitytools.d
 wget https://ghproxy.cc/https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton9-16/GE-Proton9-16.tar.gz
 tar zxf GE-Proton9-16.tar.gz
+```
 
 ## git config
+```shell
 ssh-keygen -t rsa -C "xx@xx.com"
 vi ~/.ssh/config
-```
+
 Host github.com
   Hostname ssh.github.com
   Port 443
-```
+
 vi ~/.gitconfig
-```
+
 [alias]
     st = status
     co = checkout
