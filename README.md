@@ -1,109 +1,26 @@
 # after_archlinux_installed (sk-chimeraos)
 
-## remove console motd
-```shell
-cjust toggle-user-motd
-```
-
-## first unlock immutable system
-```shell
-sudo frzr-unlock
-```
-
-## change pacman mirror and update database
-```shell
-cat "Server=https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
-sudo pacman -Sy
-```
 
 ## install development base (make autoconf ...)
-```shell
-sudo pacman -S base-devel
-sudo pacman -S cmake
-```
+sudo pacman -S base-devel cmake git
 
-## install dash to panel and vitals
-```shell
-sudo pacman -S gnome-shell-extension-dash-to-panel
-sudo pacman -S gnome-shell-extension-vitals
-```
+## set display scale 
+gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
 
-## install cockpit (localhost:9090, system management)
-```shell
-sudo pacman -S cockpit
-systemctl enable cockpit.service
-systemctl start cockpit.service
-```
+## install zsh
+sudo pacman -S zsh
+chsh -s /usr/bin/zsh
+sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-## install ibus-rime and frost pinyin
-```shell
-sudo pacman -S ibus-rime
-git clone https://ghproxy.cc/https://github.com/gaboolic/rime-frost Rime\n\n
-cd Rime
-cp -r * ~/.config/ibus/rime
-```
+## install bluetooth
+sudo pacman -S bluez bluez-utils
+sudo systemctl enable bluetooth
+sudo systemctl start bluetooth
 
-## change zsh theme to robbyrussell and enable archlinux plugin
-```shell
-vi .zshrc
-ZSH_THEME="robbyrussell"
-plugins=(git sudo z fast-syntax-highlighting archlinux)
-```
-
-## set flatpak mirror
-```shell
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
-then install microsoft-edge
-```
-
-## set efi boot order
-```shell
-sudo efibootmgr -o 000x,000y,000z
-```
-
-## install steamcommunity_302 for steam deck
-```shell
-cd SteamDeck_302
-./install.sh
-```
-
-## install netease-cloud-music
-```shell
-git clone https://aur.archlinux.org/netease-cloud-music.git
-cd netease-cloud-music
-makepkg -si
-```
-
-## install rust
-```shell
-yay rustup
-echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup' >> ~/.zshrc
-echo 'export RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup' >> ~/.zshrc
-rustup default stable
-```
-
-## install nodejs
-```shell
-yay nodejs
-yay npm
-npm config set registry https://registry.npmmirror.com
-```
-
-## install vscode
-```shell
-yay -S visual-studio-code-bin
-```
-
-## install proton-ge
-```shell
-cd .steam/steam/compatibilitytools.d
-wget https://ghproxy.cc/https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton9-16/GE-Proton9-16.tar.gz
-tar zxf GE-Proton9-16.tar.gz
-```
-
-## git config
-```shell
+## config git
+ssh-keygen -t rsa -C "xx@xx.com"
+git config --global user.name xxx
+git config --global user.email xx@xx.com
 ssh-keygen -t rsa -C "xx@xx.com"
 vi ~/.ssh/config
 
@@ -130,4 +47,74 @@ vi ~/.gitconfig
     hist = log --pretty=format:\"%C(yellow)%h %C(red)%d %C(reset)%s %C(green)[%an] %C(blue)%ad\" --topo-order --graph --date=short
     type = cat-file -t
     dump = cat-file -p
-```
+[url "https://ghproxy.cc/https://github.com/"]
+        insteadof = https://github.com/
+
+## install yay
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+
+## install chinese fonts
+sudo pacman -S adobe-source-han-sans-otc-fonts
+sudo bash -c 'cat << EOF > /etc/fonts/conf.d/64-language-selector-prefer.conf
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <alias>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Source Han Sans SC</family>
+      <family>Source Han Sans TC</family>
+      <family>Source Han Sans HW</family>
+      <family>Source Han Sans K</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>monospace</family>
+    <prefer>
+      <family>Source Han Sans SC</family>
+      <family>Source Han Sans TC</family>
+      <family>Source Han Sans HW</family>
+      <family>Source Han Sans K</family>
+    </prefer>
+  </alias>
+</fontconfig>
+EOF'
+fc-cache -fv
+
+## install dash to panel and vitals
+sudo pacman -S gnome-shell-extension-dash-to-panel
+sudo pacman -S gnome-shell-extension-vitals
+
+## install ibus-rime and frost pinyin
+sudo pacman -S ibus-rime
+git clone https://ghproxy.cc/https://github.com/gaboolic/rime-frost
+cp -r rime-frost/* ~/.config/ibus/rime
+
+## set efi boot order
+sudo grub-install /dev/nvmeXXXX
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+## install steamcommunity_302 for steam deck
+cd SteamDeck_302
+./install.sh
+
+## install rust
+yay rustup
+echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup' >> ~/.zshrc
+echo 'export RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup' >> ~/.zshrc
+rustup default stable
+
+## install nodejs
+yay nodejs
+yay npm
+npm config set registry https://registry.npmmirror.com
+
+## install vscode
+yay -S visual-studio-code-bin
+
+## install proton-ge
+cd .steam/steam/compatibilitytools.d
+wget https://ghproxy.cc/https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton9-16/GE-Proton9-16.tar.gz
+tar zxf GE-Proton9-16.tar.gz
